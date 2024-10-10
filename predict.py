@@ -151,10 +151,12 @@ class Predictor(BasePredictor):
                 print(f"Downloading LoRA weights from - HF URL: {hf_lora}")
                 huggingface_slug = re.search(r"^https?://huggingface.co/([a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+)", hf_lora).group(1)
                 weight_name = hf_lora.split('/')[-1]
+                token_query = re.search(r"token=([a-zA-Z0-9_-]+)", hf_lora)
+                hf_token = token_query.group(1) if token_query else None
                 print(f"HuggingFace slug from URL: {huggingface_slug}, weight name: {weight_name}")
                 adapter_name = names[count]
                 count += 1
-                self.txt2img_pipe.load_lora_weights(huggingface_slug, weight_name=weight_name)
+                self.txt2img_pipe.load_lora_weights(huggingface_slug, weight_name=weight_name, token=hf_token)
             # Check for Civitai URL
             elif re.match(r"^https?://civitai.com/api/download/models/[0-9]+\?type=Model&format=SafeTensor", hf_lora):
                 # split url to get first part of the url, everythin before '?type'
